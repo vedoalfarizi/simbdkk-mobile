@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_search"
+        android:icon="@drawable/ic_search_state"
+        android:title="" />
+
+    <item
+        android:id="@+id/nav_hidden_option"
+        android:icon="@drawable/ic_scan_state"
+        android:title="" />
+
+    <item
+        android:id="@+id/nav_history"
+        android:icon="@drawable/ic_history_state"
+        android:title="" />
+</menu>
