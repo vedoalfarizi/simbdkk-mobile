@@ -7,14 +7,18 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
+import com.alfarizi.simbdkk.api.ApiProposal;
 import com.alfarizi.simbdkk.databinding.FragmentSearchBinding;
-import com.alfarizi.simbdkk.viewmodel.Proposal;
-import com.google.android.material.textfield.TextInputEditText;
+import com.alfarizi.simbdkk.service.ApiClient;
+import com.alfarizi.simbdkk.model.Proposal;
 
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,7 +76,24 @@ public class SearchFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 proposalId = Objects.requireNonNull(binding.proposalId.getText()).toString();
-                Toast.makeText(getContext(), "Searching..." + proposalId, Toast.LENGTH_SHORT).show();
+                if(proposalId.equals("")){
+                    Toast.makeText(getContext(), "Proposal ID tidak boleh kosong", Toast.LENGTH_SHORT).show();
+                }else{
+                    Proposal proposal = new Proposal(proposalId);
+                    ApiProposal apiProposal = ApiClient.getRetrofitInstance().create(ApiProposal.class);
+                    Call<Proposal> call = apiProposal.trackProposal(proposal);
+                    call.enqueue(new Callback<Proposal>() {
+                        @Override
+                        public void onResponse(Call<Proposal> call, Response<Proposal> response) {
+                            Toast.makeText(getContext(), "Searching success" + proposalId, Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Proposal> call, Throwable t) {
+                            Toast.makeText(getContext(), "Searching fail", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
 
