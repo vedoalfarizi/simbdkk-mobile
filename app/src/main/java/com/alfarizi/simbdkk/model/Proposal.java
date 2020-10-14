@@ -15,6 +15,8 @@ public class Proposal {
     @SerializedName("updatedAt")
     private String updatedAt;
 
+    public Proposal() {}
+
     public Proposal(String id){
         this.id = id;
     }

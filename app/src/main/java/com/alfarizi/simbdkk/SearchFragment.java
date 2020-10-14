@@ -1,9 +1,11 @@
 package com.alfarizi.simbdkk;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,14 @@ import android.widget.Toast;
 
 import com.alfarizi.simbdkk.api.ApiProposal;
 import com.alfarizi.simbdkk.databinding.FragmentSearchBinding;
+import com.alfarizi.simbdkk.model.TrackProposal;
 import com.alfarizi.simbdkk.service.ApiClient;
 import com.alfarizi.simbdkk.model.Proposal;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -35,6 +42,7 @@ public class SearchFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private FragmentSearchBinding binding;
     private String proposalId;
+    private ProgressDialog progressDialog;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -61,9 +69,9 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            // TODO use it or erase it
-        }
+//        if (getArguments() != null) {
+//            // TODO use it or erase it
+//        }
     }
 
     @Override
@@ -79,18 +87,37 @@ public class SearchFragment extends Fragment {
                 if(proposalId.equals("")){
                     Toast.makeText(getContext(), "Proposal ID tidak boleh kosong", Toast.LENGTH_SHORT).show();
                 }else{
-                    Proposal proposal = new Proposal(proposalId);
+                    progressDialog = new ProgressDialog(getActivity());
+                    progressDialog.setMessage("Mencari...");
+                    progressDialog.show();
                     ApiProposal apiProposal = ApiClient.getRetrofitInstance().create(ApiProposal.class);
-                    Call<Proposal> call = apiProposal.trackProposal(proposal);
-                    call.enqueue(new Callback<Proposal>() {
+                    Call<TrackProposal> trackProposalCall = apiProposal.trackProposal(proposalId);
+                    trackProposalCall.enqueue(new Callback<TrackProposal>() {
                         @Override
-                        public void onResponse(Call<Proposal> call, Response<Proposal> response) {
-                            Toast.makeText(getContext(), "Searching success" + proposalId, Toast.LENGTH_SHORT).show();
+                        public void onResponse(Call<TrackProposal> call, Response<TrackProposal> response) {
+                            progressDialog.dismiss();
+                            if(response.isSuccessful()){
+                                searchingProposalHandler(response.body().getProposal());
+                            }else{
+                                try {
+                                    String error = response.errorBody().string();
+                                    Log.d("error message", error);
+
+                                    JSONObject errObj = new JSONObject(error);
+
+                                    String message = errObj.getString("message");
+                                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                                } catch (IOException | JSONException e) {
+                                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
 
                         @Override
-                        public void onFailure(Call<Proposal> call, Throwable t) {
+                        public void onFailure(Call<TrackProposal> call, Throwable t) {
+                            progressDialog.dismiss();
                             Toast.makeText(getContext(), "Searching fail", Toast.LENGTH_SHORT).show();
+                            Log.e("onFailure", t.toString());
                         }
                     });
                 }
@@ -98,6 +125,10 @@ public class SearchFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void searchingProposalHandler(Proposal body){
+        Toast.makeText(getContext(), body.getId(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
