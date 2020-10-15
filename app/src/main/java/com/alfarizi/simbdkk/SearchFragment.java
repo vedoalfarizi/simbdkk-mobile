@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import com.alfarizi.simbdkk.api.ApiProposal;
 import com.alfarizi.simbdkk.databinding.FragmentSearchBinding;
+import com.alfarizi.simbdkk.db.ProposalDb;
 import com.alfarizi.simbdkk.model.TrackProposal;
+import com.alfarizi.simbdkk.repository.ProposalRepository;
 import com.alfarizi.simbdkk.service.ApiClient;
 import com.alfarizi.simbdkk.model.Proposal;
 
@@ -21,6 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -43,6 +48,7 @@ public class SearchFragment extends Fragment {
     private FragmentSearchBinding binding;
     private String proposalId;
     private ProgressDialog progressDialog;
+    private ProposalRepository proposalRepository;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -69,6 +75,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        proposalRepository = new ProposalRepository(getActivity().getApplication());
 //        if (getArguments() != null) {
 //            // TODO use it or erase it
 //        }
@@ -128,7 +135,23 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchingProposalHandler(Proposal body){
-        Toast.makeText(getContext(), body.getId(), Toast.LENGTH_SHORT).show();
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+
+        ProposalDb proposal = null;
+        try {
+            proposal = new ProposalDb(
+                    body.getId(),
+                    body.getTitle(),
+                    body.getStatus(),
+                    new Date(format.parse(body.getUpdatedAt()).getTime())
+            );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        proposalRepository.insert(proposal);
+
+        Toast.makeText(getContext(), body.getId()+ "inserted", Toast.LENGTH_SHORT).show();
     }
 
     @Override
