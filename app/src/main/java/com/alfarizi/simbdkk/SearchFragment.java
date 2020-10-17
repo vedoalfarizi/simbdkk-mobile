@@ -1,6 +1,7 @@
 package com.alfarizi.simbdkk;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -135,7 +136,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void searchingProposalHandler(Proposal body){
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         ProposalDb proposal = null;
         try {
@@ -143,7 +144,7 @@ public class SearchFragment extends Fragment {
                     body.getId(),
                     body.getTitle(),
                     body.getStatus(),
-                    new Date(format.parse(body.getUpdatedAt()).getTime())
+                    new Date(sdf.parse(body.getUpdatedAt()).getTime())
             );
         } catch (ParseException e) {
             e.printStackTrace();
@@ -151,7 +152,12 @@ public class SearchFragment extends Fragment {
 
         proposalRepository.insert(proposal);
 
-        Toast.makeText(getContext(), body.getId()+ "inserted", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), ResultTrackActivity.class);
+        intent.putExtra("id", body.getId());
+        intent.putExtra("title", body.getTitle());
+        intent.putExtra("status", body.getStatus());
+        intent.putExtra("updatedAt", body.getUpdatedAt());
+        startActivity(intent);
     }
 
     @Override
