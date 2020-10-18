@@ -6,12 +6,16 @@ import com.alfarizi.simbdkk.db.AppDatabase;
 import com.alfarizi.simbdkk.db.ProposalDao;
 import com.alfarizi.simbdkk.db.ProposalDb;
 
+import java.util.List;
+
 public class ProposalRepository {
     private ProposalDao proposalDao;
+    private List<ProposalDb> proposalDbs;
 
     public ProposalRepository(Application application){
         AppDatabase db = AppDatabase.getInstance(application);
         proposalDao = db.proposalDao();
+        proposalDbs = proposalDao.getProposals();
     }
 
     public void insert(final ProposalDb proposal){
@@ -21,5 +25,9 @@ public class ProposalRepository {
                 proposalDao.insertProposal(proposal);
             }
         });
+    }
+
+    public List<ProposalDb> getListProposal(){
+        return proposalDbs;
     }
 }
