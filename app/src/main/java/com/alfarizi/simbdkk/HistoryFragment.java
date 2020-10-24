@@ -80,23 +80,25 @@ public class HistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
         recyclerView = view.findViewById(R.id.rv_histories);
+        HistoryAdapter adapter = new HistoryAdapter(getAllProposals());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setAdapter(adapter);
 
         return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+//    @Override
+//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//
+////        adapter = new HistoryAdapter();
+////        recyclerView.setAdapter(adapter);
+////
+////        getAllProposals();
+//    }
 
-        adapter = new HistoryAdapter();
-        recyclerView.setAdapter(adapter);
-
-        getAllProposals();
-    }
-
-    private void getAllProposals(){
+    private ArrayList<Proposal> getAllProposals(){
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
         List<ProposalDb> proposalDbs =  proposalRepository.getListProposal();
@@ -111,6 +113,7 @@ public class HistoryFragment extends Fragment {
             );
             proposals.add(proposal);
         }
-        adapter.setProposals(proposals);
+
+        return proposals;
     }
 }
