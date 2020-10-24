@@ -15,12 +15,6 @@ public class Proposal {
     @SerializedName("updatedAt")
     private String updatedAt;
 
-    public Proposal() {}
-
-    public Proposal(String id){
-        this.id = id;
-    }
-
     public Proposal(String id, String title, String status, String updatedAt){
         this.id = id;
         this.title = title;
@@ -40,23 +34,11 @@ public class Proposal {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

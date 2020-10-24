@@ -17,14 +17,6 @@ public class TrackProposal {
     @Expose
     private String message;
 
-    public Boolean getSuccess() {
-        return success;
-    }
-
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-
     public Proposal getProposal() {
         return proposal;
     }
@@ -33,19 +25,4 @@ public class TrackProposal {
         this.proposal = proposal;
     }
 
-    public Integer getCode() {
-        return code;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 }

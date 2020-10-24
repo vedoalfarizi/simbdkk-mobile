@@ -1,6 +1,5 @@
 package com.alfarizi.simbdkk;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
         }
     }
 
-    class HistoryHolder extends RecyclerView.ViewHolder{
+    static class HistoryHolder extends RecyclerView.ViewHolder{
 
         TextView tvId, tvTitle, tvStatus, tvUpdatedAt;
 
