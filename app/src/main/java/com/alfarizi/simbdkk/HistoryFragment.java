@@ -1,5 +1,7 @@
 package com.alfarizi.simbdkk;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,14 +14,28 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.alfarizi.simbdkk.api.ApiProposal;
 import com.alfarizi.simbdkk.db.ProposalDb;
 import com.alfarizi.simbdkk.model.Proposal;
+import com.alfarizi.simbdkk.model.TrackProposal;
 import com.alfarizi.simbdkk.repository.ProposalRepository;
+import com.alfarizi.simbdkk.service.ApiClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +52,7 @@ public class HistoryFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private HistoryAdapter adapter;
+    private ProgressDialog progressDialog;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -81,6 +98,12 @@ public class HistoryFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.rv_histories);
         HistoryAdapter adapter = new HistoryAdapter(getAllProposals());
+        adapter.setOnItemClick(new HistoryAdapter.OnItemClick() {
+            @Override
+            public void click(Proposal p) {
+                searchProposal(p.getId());
+            }
+        });
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
@@ -88,15 +111,6 @@ public class HistoryFragment extends Fragment {
         return view;
     }
 
-//    @Override
-//    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-//        super.onViewCreated(view, savedInstanceState);
-//
-////        adapter = new HistoryAdapter();
-////        recyclerView.setAdapter(adapter);
-////
-////        getAllProposals();
-//    }
 
     private ArrayList<Proposal> getAllProposals(){
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
@@ -115,5 +129,66 @@ public class HistoryFragment extends Fragment {
         }
 
         return proposals;
+    }
+
+    private void searchProposal(String proposalId){
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Memuat...");
+        progressDialog.show();
+        ApiProposal apiProposal = ApiClient.getRetrofitInstance().create(ApiProposal.class);
+        Call<TrackProposal> trackProposalCall = apiProposal.trackProposal(proposalId);
+        trackProposalCall.enqueue(new Callback<TrackProposal>() {
+            @Override
+            public void onResponse(Call<TrackProposal> call, Response<TrackProposal> response) {
+                progressDialog.dismiss();
+                if(response.isSuccessful()){
+                    searchingProposalHandler(response.body().getProposal());
+                }else{
+                    try {
+                        String error = response.errorBody().string();
+                        Log.d("error message", error);
+
+                        JSONObject errObj = new JSONObject(error);
+
+                        String message = errObj.getString("message");
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    } catch (IOException | JSONException e) {
+                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TrackProposal> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), "Searching fail", Toast.LENGTH_SHORT).show();
+                Log.e("onFailure", t.toString());
+            }
+        });
+    }
+
+    private void searchingProposalHandler(Proposal body){
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        ProposalDb proposal = null;
+        try {
+            proposal = new ProposalDb(
+                    body.getId(),
+                    body.getTitle(),
+                    body.getStatus(),
+                    new Date(sdf.parse(body.getUpdatedAt()).getTime())
+            );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        proposalRepository.update(proposal);
+
+        Intent intent = new Intent(getActivity(), ResultTrackActivity.class);
+        intent.putExtra("id", body.getId());
+        intent.putExtra("title", body.getTitle());
+        intent.putExtra("status", body.getStatus());
+        intent.putExtra("updatedAt", body.getUpdatedAt());
+        startActivity(intent);
     }
 }

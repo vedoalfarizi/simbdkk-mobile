@@ -27,6 +27,15 @@ public class ProposalRepository {
         });
     }
 
+    public void update(final ProposalDb proposal){
+        AppDatabase.databaseWriteExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                proposalDao.updateProposal(proposal);
+            }
+        });
+    }
+
     public List<ProposalDb> getListProposal(){
         return proposalDbs;
     }

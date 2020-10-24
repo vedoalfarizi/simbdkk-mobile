@@ -15,11 +15,16 @@ import java.util.ArrayList;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryHolder> {
 
-    ArrayList<Proposal> proposals;
-    OnItemClick handler;
+    private ArrayList<Proposal> proposals;
+    private OnItemClick onItemClick;
 
     HistoryAdapter(ArrayList<Proposal> proposals){
         this.proposals = proposals;
+        notifyDataSetChanged();
+    }
+
+    public void setOnItemClick(OnItemClick onItemClick){
+        this.onItemClick = onItemClick;
     }
 
     @NonNull
@@ -30,13 +35,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistoryHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final HistoryHolder holder, int position) {
         Proposal proposal = proposals.get(position);
 
         holder.tvId.setText(proposal.getId());
         holder.tvTitle.setText(proposal.getTitle());
         holder.tvStatus.setText(proposal.getStatus());
         holder.tvUpdatedAt.setText(proposal.getUpdatedAt());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClick.click(proposals.get(holder.getAdapterPosition()));
+            }
+        });
     }
 
     @Override
@@ -59,15 +71,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryH
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvStatus = itemView.findViewById(R.id.tv_status);
             tvUpdatedAt = itemView.findViewById(R.id.tv_updatedAt);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    Proposal p = proposals.get(position);
-                    handler.click(p);
-                }
-            });
         }
     }
 
