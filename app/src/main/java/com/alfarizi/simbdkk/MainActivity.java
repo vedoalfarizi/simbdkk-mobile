@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -126,9 +127,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     private void verifiedMailHandler(Mail mail){
+        String delegate = TextUtils.join("\n", mail.getDelegation());
+
         Intent intent = new Intent(this, VerificationResultActivity.class);
         intent.putExtra("validation", mail.getValidMessage());
         intent.putExtra("info", mail.getInfo());
+        intent.putExtra("delegate", delegate);
 
         startActivity(intent);
     }

@@ -16,12 +16,17 @@ public class VerificationResultActivity extends AppCompatActivity implements Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification_result);
 
-        EditText etValidation = findViewById(R.id.et_validation);
+        TextView tvValidation = findViewById(R.id.tv_validation);
+        TextView tvInfo = findViewById(R.id.tv_info);
+        TextView tvDelegation = findViewById(R.id.tv_delegation);
+
         Button btnBack = findViewById(R.id.btn_back);
 
         Intent intent = getIntent();
         if(intent != null){
-            etValidation.setText(intent.getStringExtra("validation"));
+            tvValidation.setText(intent.getStringExtra("validation"));
+            tvInfo.setText(intent.getStringExtra("info"));
+            tvDelegation.setText(intent.getStringExtra("delegate"));
         }
 
         btnBack.setOnClickListener(this);
