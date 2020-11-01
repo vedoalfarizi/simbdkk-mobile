@@ -13,7 +13,7 @@ public interface ProposalDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertProposal(ProposalDb proposalDb);
 
-    @Query("SELECT * FROM proposals ORDER BY accessed_at ASC LIMIT 5")
+    @Query("SELECT * FROM proposals ORDER BY accessed_at DESC LIMIT 5")
     List<ProposalDb> getProposals();
 
     @Update
