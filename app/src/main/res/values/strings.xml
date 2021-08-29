@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">simbdkk</string>
+    <string name="app_name">Simbakwa</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_search">Cari</string>
     <string name="input_proposal_id">Masukkan ID proposal yang ingin dicari</string>
