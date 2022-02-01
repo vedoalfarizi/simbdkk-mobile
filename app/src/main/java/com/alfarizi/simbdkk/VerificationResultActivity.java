@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,9 +25,9 @@ public class VerificationResultActivity extends AppCompatActivity implements Vie
 
         Intent intent = getIntent();
         if(intent != null){
-            tvValidation.setText(intent.getStringExtra("validation"));
-            tvInfo.setText(intent.getStringExtra("info"));
-            tvDelegation.setText(intent.getStringExtra("delegate"));
+            tvValidation.setText(Html.fromHtml(intent.getStringExtra("validation")));
+            tvInfo.setText(Html.fromHtml(intent.getStringExtra("info")));
+            tvDelegation.setText(Html.fromHtml(intent.getStringExtra("delegate")));
         }
 
         btnBack.setOnClickListener(this);
